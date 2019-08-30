@@ -1,9 +1,9 @@
-import { action, observable, observe } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import { History, Location, LocationDescriptorObject } from 'history';
-import {Route, RouteState, RouteMap, RouteStateItem, HookParams, TransitionHook} from './state'
+import {RouteParams, RouteState, RouteStateItem, HookParams, TransitionHook} from './state'
 export interface RouterStoreOptions {
-    notFoundRoute: Route;
-    initialRoute: Route;
+    notFoundRoute: RouteParams;
+    initialRoute: RouteParams;
     beforeEach?: TransitionHook;
 }
 
@@ -12,11 +12,11 @@ export default class RouterStore {
     public actualRoute: RouteState;
     public defaultRoute: RouteState;
     public history: History | null = null;
-    private routes: RouteState[];
+    public routes: RouteState[];
     public matchedRoutes: RouteState[] = [];
     private beforeEach: TransitionHook | undefined;
 
-    constructor(routeMap: RouteMap, options: RouterStoreOptions) {
+    constructor(routeMap: RouteParams[], options: RouterStoreOptions) {
         this.routes = routeMap.map(r => new RouteStateItem(r))
         this.defaultRoute = new RouteStateItem(options.notFoundRoute)
         this.actualRoute = new RouteStateItem(options.initialRoute || options.notFoundRoute)
@@ -28,9 +28,10 @@ export default class RouterStore {
     public getRouteByPath = (path: string): RouteState | undefined => {
         return this.routes.map((r) => r.searchByPath(path)).find(f => f !== undefined)
     }
-    protected getMatchedRoutes = (path: string) => {
+    protected getMatchedRoutes = async (path: string) => {
         const initial: RouteState[] = []
         this.matchedRoutes = this.routes.reduce((matched, current) => (current.getMatched(path, matched)), initial)
+        return await new Promise((r) => {r()});
     }
     public get lastMatchedRoute(): RouteState | undefined {
         const matched = this.matchedRoutes.filter((r) => (r.match && r.match.isExact))
@@ -42,7 +43,8 @@ export default class RouterStore {
     @action
     public async _updateLocation(newState: Location) {
         const lastRoute = this.actualRoute
-        this.getMatchedRoutes(newState.pathname)
+        await this.getMatchedRoutes(newState.pathname)
+        console.log("new matched",this.matchedRoutes)
         const nextRoute = this.lastMatchedRoute || this.defaultRoute
         nextRoute.location = newState
 

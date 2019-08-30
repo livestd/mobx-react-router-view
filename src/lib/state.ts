@@ -1,32 +1,29 @@
 import {Location} from "history";
 import {match, matchPath} from "react-router"
 import RouterStore from "./store";
+import { observable } from 'mobx';
 
 export type HookParams = [RouteState, RouteState, RouterStore]
 
 export type TransitionHook = (
     ...[]: HookParams
 ) => Promise<void>;
-
-export interface Route {
-    name: string; // e.g. 'department'
-    path: string; // e.g. '/departments/:id'
-    component: any;
-    meta?: any;
+export interface RouteHooks {
     beforeExit?: TransitionHook;
     beforeEnter?: TransitionHook;
     onExit?: TransitionHook;
     onEnter?: TransitionHook;
 }
-
-export interface RouteWithChild extends Route {
-    children?: RouteWithChild[];
+export interface RouteParams extends RouteHooks {
+    name: string; // e.g. 'department'
+    path: string; // e.g. '/departments/:id'
+    component: any;
+    children?: RouteParams[];
+    meta?: any;
 }
 
-export type RouteMap = RouteWithChild[];
-
 export interface RouteState {
-    params: RouteWithChild;
+    params: RouteParams;
     location: Location;
     fullPath: string;
     match: match | null;
@@ -45,7 +42,7 @@ export class RouteStateItem implements RouteState {
     public childRoutes: RouteState[] = [];
     public fullPath: string;
     public match: match | null = null;
-    constructor(public params: RouteWithChild, basePath?: string) {
+    constructor(public params: RouteParams, basePath?: string) {
         const baseFixed = (basePath || "/").replace(/\/$/,"")
         const selfFixed = (params.path || "/").replace(/^\//,"")
         this.fullPath = baseFixed + "/" + selfFixed
@@ -56,16 +53,18 @@ export class RouteStateItem implements RouteState {
     public getMatched = (path: string, matched: RouteState[]): RouteState[] => {
         const initial: RouteState[] = []
         this.match = matchPath(path, {path: this.fullPath})
-        console.log("updatet match", this.fullPath, this.match)
+
         // reset match state and get matched routes
         const childMatched = this.childRoutes.reduce((matched, child) => (child.getMatched(path, matched)), initial)
         if (this.match) {
-            return [...matched, this, ...childMatched]
+            // have exact route
+            if ( this.match.isExact || !!childMatched.find((r) => (r.match && r.match.isExact)) ) {
+                return [...matched, this, ...childMatched]
+            }
         }
         return matched
     }
     public searchByName(name: string): RouteState | undefined {
-        [1].find((i: number) => (i == 1))
         return this.params.name === name ? this : this.childRoutes.map((r) => r.searchByName(name)).find(f => f !== undefined)
     }
     public searchByPath(path: string): RouteState | undefined {
