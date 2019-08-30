@@ -13,14 +13,27 @@
     "react",
     "react-router",
     "mobx",
-    "mobx-router"
+    "mobx-router",
+    "routing",
+    "router"
+  ],
+  "files": [
+    "dist",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "author": "Dmitry Rtishchev - @livestd",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/livestd/mobx-react-router-view.git"
+  },
+  "homepage": "https://github.com/livestd/mobx-react-router-view#readme",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^3.6.2"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@types/react-router": "^5.0.3",
     "mobx": "^5.13.0",
     "react-router": "^5.0.1"
