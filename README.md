@@ -5,7 +5,7 @@ React routing like Vue router-view sync with your MobX state
 
 ## Installation
 ```
-npm install --save mobx-react-router
+npm install --save mobx-react-router-view
 ```
 
 ### Typescript
