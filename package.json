@@ -1,0 +1,28 @@
+{
+  "name": "mobx-react-router-view",
+  "version": "1.0.0",
+  "description": "React routing like Vue router-view sync with your MobX state",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "react-router",
+    "mobx",
+    "mobx-router"
+  ],
+  "author": "Dmitry Rtishchev - @livestd",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "@types/react-router": "^5.0.3",
+    "mobx": "^5.13.0",
+    "react-router": "^5.0.1"
+  }
+}
