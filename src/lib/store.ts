@@ -44,7 +44,7 @@ export default class RouterStore {
     public async _updateLocation(newState: Location) {
         const lastRoute = this.actualRoute
         await this.getMatchedRoutes(newState.pathname)
-        console.log("new matched",this.matchedRoutes)
+
         const nextRoute = this.lastMatchedRoute || this.defaultRoute
         nextRoute.location = newState
 
