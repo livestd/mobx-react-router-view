@@ -1,6 +1,6 @@
 {
   "name": "mobx-react-router-view",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "React routing like Vue router-view sync with your MobX state",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
